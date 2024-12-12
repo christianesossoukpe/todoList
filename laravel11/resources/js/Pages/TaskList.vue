@@ -1,6 +1,6 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import Navbar from './Navbar.vue';
 
@@ -9,6 +9,10 @@ const { tasks } = usePage().props;
 const notifications = ref([]);
 const showDeleteConfirmation = ref(false);
 const taskToDelete = ref(null);
+const showEditConfirmation = ref(false);
+const taskToEdit = ref(null);
+const currentPage = ref(1);
+const itemsPerPage = 8; // Nombre de tâches par page
 
 const showNotification = (message, type = 'success') => {
   notifications.value.push({ message, type });
@@ -27,6 +31,7 @@ const deleteTask = () => {
     Inertia.delete(`/tasks/${taskToDelete.value.id}`).then(() => {
       showNotification('Tâche supprimée avec succès!', 'success');
       showDeleteConfirmation.value = false;
+      taskToDelete.value = null;
     }).catch(() => {
       showNotification('Erreur lors de la suppression de la tâche.', 'error');
       showDeleteConfirmation.value = false;
@@ -40,7 +45,40 @@ const cancelDelete = () => {
 };
 
 const editTask = (id) => {
-  Inertia.get(`/tasks/${id}/edit`);
+  showEditConfirmation.value = true;
+  taskToEdit.value = id;
+};
+
+const confirmEditTask = () => {
+  if (taskToEdit.value) {
+    Inertia.get(`/tasks/${taskToEdit.value}/edit`).then(() => {
+      showNotification('Tâche modifiée avec succès!', 'success');
+      showEditConfirmation.value = false;
+      taskToEdit.value = null;
+    }).catch(() => {
+      showNotification('Erreur lors de la modification de la tâche.', 'error');
+      showEditConfirmation.value = false;
+    });
+  }
+};
+
+const paginatedTasks = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage;
+  return tasks.slice(startIndex, startIndex + itemsPerPage);
+});
+
+const totalPages = computed(() => Math.ceil(tasks.length / itemsPerPage));
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
 };
 </script>
 
@@ -52,26 +90,17 @@ const editTask = (id) => {
       <div 
         v-for="(notification, index) in notifications" 
         :key="index" 
-        :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white']"
+        :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : notification.type === 'info' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white']"
       >
         {{ notification.message }}
       </div>
     </div>
 
-    <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
-        <p>Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
-        <div class="mt-4">
-          <button @click="deleteTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
-          <button @click="cancelDelete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
-        </div>
-      </div>
-    </div>
-
-    <h1 class="text-2xl font-bold mb-4">Liste des Tâches</h1>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6
+    w-[1400px]  h-[700px] ml-[200px] mr-[100px] ">
       <div 
-        v-for="task in tasks" 
+        v-for="task in paginatedTasks" 
         :key="task.id" 
         class="bg-white p-4 rounded-lg shadow-md"
       >
@@ -93,9 +122,34 @@ const editTask = (id) => {
         </div>
       </div>
     </div>
+
+    <div class="mt-6 flex justify-center space-x-4">
+      <button @click="previousPage" :disabled="currentPage === 1" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">Précédent</button>
+      <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">Suivant</button>
+    </div>
+
+    <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div class="bg-white p-6 rounded shadow-lg text-center">
+        <p>Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
+        <div class="mt-4">
+          <button @click="deleteTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
+          <button @click="cancelDelete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showEditConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div class="bg-white p-6 rounded shadow-lg text-center">
+        <p>Êtes-vous sûr de vouloir modifier cette tâche ?</p>
+        <div class="mt-4">
+          <button @click="confirmEditTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
+          <button @click="() => showEditConfirmation.value = false" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* You can remove the scoped styles since we are using Tailwind CSS */
 </style>

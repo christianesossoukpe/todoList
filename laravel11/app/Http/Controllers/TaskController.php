@@ -43,10 +43,11 @@
      
      public function destroy($id)
      {
-         $task = Task::findOrFail($id);
-         $task->delete();
+         // Logique pour supprimer la tâche
+         Task::destroy($id);
      
-         return response()->json(['message' => 'Tâche supprimée avec succès!']);
+         // Redirection avec un message flash
+         return redirect()->route('tasks.index')->with('message', 'Tâche supprimée avec succès!');
      }
       
      public function edit($id)
