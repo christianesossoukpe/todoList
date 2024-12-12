@@ -5,35 +5,58 @@ import Navbar from './Navbar.vue';
 
 const title = ref('');
 const description = ref('');
-const status = ref('');  // Ajout d'une variable pour le statut
-const category = ref('');  // Ajout d'une variable pour la catégorie
-const dueDate = ref('');  // Ajout d'une variable pour la date d'échéance
+const status = ref('');
+const category = ref('');
+const dueDate = ref('');
+const notifications = ref([]); // Variable pour les notifications
+
+// Fonction pour afficher des notifications
+const showNotification = (message, type = 'success') => {
+  notifications.value.push({ message, type });
+  setTimeout(() => {
+    notifications.value.shift(); // Supprimer la notification après 5 secondes
+  }, 5000);
+};
 
 // Fonction pour ajouter une tâche
 const addTask = () => {
   if (!title.value || !description.value || !status.value || !category.value || !dueDate.value) {
-    alert("Tous les champs doivent être remplis !");
+    showNotification("Tous les champs doivent être remplis !", 'error');
     return;
   }
 
   Inertia.post('/tasks', {
-    title: title.value, 
+    title: title.value,
     description: description.value,
-    status: status.value,  // Envoyer le statut avec la requête
-    category: category.value,  // Envoyer la catégorie avec la requête
-    due_date: dueDate.value,  // Envoyer la date d'échéance avec la requête
+    status: status.value,
+    category: category.value,
+    due_date: dueDate.value,
+  }).then(() => {
+    showNotification("Tâche ajoutée avec succès !");
+  }).catch(() => {
+    showNotification("Erreur lors de l'ajout de la tâche.", 'error');
   });
-  Inertia.visit('/tasks');
 };
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen bg-gradient-to-r from-sky-300 to-indigo-500"> <!-- Fond bleu clair pour toute la page -->
     <Navbar />
 
-    <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+    <div class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg mt-14">
       <h1 class="text-3xl font-semibold text-center text-gray-800 mb-6">Ajouter une tâche</h1>
-      
+
+      <!-- Notifications -->
+      <div v-if="notifications.length > 0" class="fixed top-5 right-5 z-50">
+        <div 
+          v-for="(notification, index) in notifications" 
+          :key="index" 
+          :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white']"
+        >
+          {{ notification.message }}
+        </div>
+      </div>
+
       <!-- Formulaire d'ajout de tâche -->
       <form @submit.prevent="addTask">
         <div class="mb-4">
@@ -108,3 +131,9 @@ const addTask = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.fixed {
+  position: fixed;
+}
+</style>

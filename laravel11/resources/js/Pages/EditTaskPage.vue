@@ -1,85 +1,85 @@
 <template>
-  <div>
+  <div class="min-h-screen bg-gradient-to-r from-sky-300 to-indigo-500"> <!-- Fond dégradé pour la page entière -->
     <Navbar />
- 
-  <div class="container">
+    <div class="flex flex-col items-center justify-center mt-32 h-full">
+    <div class="container">
+      <h1  class="text-3xl font-semibold text-center text-gray-800 mb-6">Modifier la tâche</h1>
 
-    <h1>Modifier la tâche</h1>
+      <!-- Formulaire de modification de la tâche -->
+      <form @submit.prevent="submitForm">
+        <div class="mb-4">
+          <label for="title" class="block text-sm font-medium text-gray-700">Titre</label>
+          <input
+            type="text"
+            id="title"
+            v-model="form.title"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            :class="{'border-red-500': errors.title}"
+          />
+          <p v-if="errors.title" class="text-red-500 text-sm">{{ errors.title }}</p>
+        </div>
 
-    <!-- Formulaire de modification de la tâche -->
-    <form @submit.prevent="submitForm">
-      <div class="mb-4">
-        <label for="title" class="block text-sm font-medium text-gray-700">Titre</label>
-        <input
-          type="text"
-          id="title"
-          v-model="form.title"
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-          :class="{'border-red-500': errors.title}"
-        />
-        <p v-if="errors.title" class="text-red-500 text-sm">{{ errors.title }}</p>
-      </div>
+        <div class="mb-4">
+          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            id="description"
+            v-model="form.description"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            :class="{'border-red-500': errors.description}"
+          ></textarea>
+          <p v-if="errors.description" class="text-red-500 text-sm">{{ errors.description }}</p>
+        </div>
 
-      <div class="mb-4">
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-        <textarea
-          id="description"
-          v-model="form.description"
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-          :class="{'border-red-500': errors.description}"
-        ></textarea>
-        <p v-if="errors.description" class="text-red-500 text-sm">{{ errors.description }}</p>
-      </div>
+        <div class="mb-4">
+          <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
+          <select
+            id="status"
+            v-model="form.status"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            :class="{'border-red-500': errors.status}"
+          >
+            <option value="in_progress">En cours</option>
+            <option value="completed">Terminé</option>
+          </select>
+          <p v-if="errors.status" class="text-red-500 text-sm">{{ errors.status }}</p>
+        </div>
 
-      <div class="mb-4">
-        <label for="status" class="block text-sm font-medium text-gray-700">Statut</label>
-        <select
-          id="status"
-          v-model="form.status"
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-          :class="{'border-red-500': errors.status}"
-        >
-          <option value="in_progress">En cours</option>
-          <option value="completed">Terminé</option>
-        </select>
-        <p v-if="errors.status" class="text-red-500 text-sm">{{ errors.status }}</p>
-      </div>
+        <div class="mb-4">
+          <label for="category" class="block text-sm font-medium text-gray-700">Catégorie</label>
+          <input
+            type="text"
+            id="category"
+            v-model="form.category"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            :class="{'border-red-500': errors.category}"
+          />
+          <p v-if="errors.category" class="text-red-500 text-sm">{{ errors.category }}</p>
+        </div>
 
-      <div class="mb-4">
-        <label for="category" class="block text-sm font-medium text-gray-700">Catégorie</label>
-        <input
-          type="text"
-          id="category"
-          v-model="form.category"
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-          :class="{'border-red-500': errors.category}"
-        />
-        <p v-if="errors.category" class="text-red-500 text-sm">{{ errors.category }}</p>
-      </div>
+        <div class="mb-4">
+          <label for="due_date" class="block text-sm font-medium text-gray-700">Date d'échéance</label>
+          <input
+            type="date"
+            id="due_date"
+            v-model="form.due_date"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            :class="{'border-red-500': errors.due_date}"
+          />
+          <p v-if="errors.due_date" class="text-red-500 text-sm">{{ errors.due_date }}</p>
+        </div>
 
-      <div class="mb-4">
-        <label for="due_date" class="block text-sm font-medium text-gray-700">Date d'échéance</label>
-        <input
-          type="date"
-          id="due_date"
-          v-model="form.due_date"
-          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-          :class="{'border-red-500': errors.due_date}"
-        />
-        <p v-if="errors.due_date" class="text-red-500 text-sm">{{ errors.due_date }}</p>
-      </div>
-
-      <div class="mb-4">
-        <button
-          type="submit"
-          class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md"
-        >
-          Mettre à jour
-        </button>
-      </div>
-    </form>
+        <div class="mb-4">
+          <button
+            type="submit"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md"
+          >
+            Mettre à jour
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+  </div>
 </template>
 
 <script setup>
@@ -120,5 +120,8 @@ const submitForm = async () => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  background: white; /* Fond blanc pour le conteneur */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Ombre */
 }
 </style>

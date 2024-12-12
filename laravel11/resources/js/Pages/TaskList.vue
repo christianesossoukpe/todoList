@@ -15,7 +15,7 @@ const taskToDelete = ref(null); // Pour stocker la tâche à supprimer
 const showEditConfirmation = ref(false); // Pour afficher la confirmation de modification
 const taskToEdit = ref(null); // Pour stocker la tâche à modifier
 const currentPage = ref(1); // Pour gérer la page courante
-const itemsPerPage = 8; // Nombre de tâches par page
+const itemsPerPage = 6; // Nombre de tâches par page
 
 // États pour la recherche et le filtrage
 const searchQuery = ref(''); // Pour la recherche par titre ou description
@@ -122,99 +122,103 @@ const previousPage = () => {
 </script>
 
 <template>
-  <div class="p-6 bg-gray-100 rounded-lg">
+  <div class="bg-gray-100">
     <Navbar /> <!-- Affichage de la barre de navigation -->
+    <div class="bg-gradient-to-r from-sky-300 to-indigo-500">
 
-    <div v-if="notifications.length > 0" class="fixed top-5 right-5 z-50">
-      <div 
-        v-for="(notification, index) in notifications" 
-        :key="index" 
-        :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : notification.type === 'info' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white']"
-      >
-        {{ notification.message }} <!-- Affichage du message de notification -->
-      </div>
-    </div>
-
-    <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1> <!-- Titre de la liste -->
-
-   <!-- Barre de recherche et filtres -->
-<div class="mb-4 flex flex-row items-start space-x-4"> <!-- Utilisation de flexbox pour l'alignement horizontal -->
-  <input
-    type="text"
-    v-model="searchQuery"
-    class="border rounded p-2 w-[300px] ml-[400px]"
-    placeholder="Rechercher par titre ou description"
-  />
-
-  <select v-model="selectedStatus" class="border rounded p-2 w-[300px]">
-    <option value="all">Tous les statuts</option>
-    <option value="in_progress">En cours</option>
-    <option value="completed">Terminé</option>
-  </select>
-
-  <input
-    type="date"
-    v-model="filterDueDate"
-    class="border rounded p-2 w-[300px]"
-  />
-</div>
-
-    <!-- Affichage des tâches filtrées -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div 
-        v-for="task in filteredTasks" 
-        :key="task.id" 
-        class="bg-white p-4 rounded-lg shadow-md"
-      >
-        <div class="text-gray-600">Tâche: {{ task.id }}</div>
-        <div class="font-bold">Titre: {{ task.title }}</div>
-        <div class="text-gray-700 mt-1">Description: {{ task.description }}</div>
-        <div class="mt-2">
-          <strong>Statut:</strong>
-          <span :class="task.status === 'completed' ? 'text-green-500 font-bold' : 'text-orange-500 font-bold'">
-            {{ task.status }}
-          </span>
-        </div>
-        <div class="mt-2">
-          <strong>Catégorie:</strong> {{ task.category }}
-        </div>
-        <div class="mt-2">
-          <strong>Date limite:</strong> {{ task.due_date }}
-        </div>
-        <div class="mt-4 flex justify-between">
-          <button @click="editTask(task.id)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Modifier</button>
-          <button @click="confirmDeleteTask(task)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Supprimer</button>
+      <div v-if="notifications.length > 0" class="fixed top-5 right-5 z-50">
+        <div 
+          v-for="(notification, index) in notifications" 
+          :key="index" 
+          :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : notification.type === 'info' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white']"
+        >
+          {{ notification.message }} <!-- Affichage du message de notification -->
         </div>
       </div>
-    </div>
 
-    <!-- Navigation de pagination -->
-    <div class="mt-6 flex justify-center space-x-4">
-      <button @click="previousPage" :disabled="currentPage === 1" 
-        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mt-4 disabled:opacity-50">Précédent</button>
-      <span class="mt-6">Page {{ currentPage }} sur {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages" 
-        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mt-4 disabled:opacity-50">Suivant</button>
-    </div>
+      <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1> <!-- Titre de la liste -->
 
-    <!-- Confirmation de suppression -->
-    <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
-        <p>Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
-        <div class="mt-4">
-          <button @click="deleteTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
-          <button @click="cancelDelete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+      <!-- Barre de recherche et filtres -->
+      <div class="mb-4 ml-[100px] flex flex-row items-start space-x-4">
+        <input
+          type="text"
+          v-model="searchQuery"
+          class="border rounded p-2 w-[300px] ml-[400px]"
+          placeholder="Rechercher par titre ou description"
+        />
+
+        <select v-model="selectedStatus" class="border rounded p-2 w-[300px]">
+          <option value="all">Tous les statuts</option>
+          <option value="in_progress">En cours</option>
+          <option value="completed">Terminé</option>
+        </select>
+
+        <input
+          type="date"
+          v-model="filterDueDate"
+          class="border rounded p-2 w-[300px]"
+        />
+      </div>
+
+      <!-- Affichage des tâches filtrées -->
+      <div class="flex justify-center p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
+          <div 
+            v-for="task in filteredTasks" 
+            :key="task.id" 
+            class="bg-white p-3 rounded-lg shadow-md w-72"
+          >
+            <div class="text-gray-600">Tâche: {{ task.id }}</div>
+            <div class="font-bold text-lg">Titre: {{ task.title }}</div>
+            <div class="text-gray-700 mt-1 text-sm">Description: {{ task.description }}</div>
+            <div class="mt-2">
+              <strong>Statut:</strong>
+              <span :class="task.status === 'completed' ? 'text-green-500 font-bold' : 'text-orange-500 font-bold'">
+                {{ task.status }}
+              </span>
+            </div>
+            <div class="mt-2">
+              <strong>Catégorie:</strong> {{ task.category }}
+            </div>
+            <div class="mt-2">
+              <strong>Date limite:</strong> {{ task.due_date }}
+            </div>
+            <div class="mt-4 flex justify-between">
+              <button @click="editTask(task.id)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Modifier</button>
+              <button @click="confirmDeleteTask(task)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Supprimer</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Confirmation de modification -->
-    <div v-if="showEditConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div class="bg-white p-6 rounded shadow-lg text-center">
-        <p>Êtes-vous sûr de vouloir modifier cette tâche ?</p>
-        <div class="mt-4">
-          <button @click="confirmEditTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
-          <button @click="() => showEditConfirmation.value = false" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+      <!-- Navigation de pagination -->
+      <div class="mt-6 flex justify-center space-x-4">
+        <button @click="previousPage" :disabled="currentPage === 1" 
+          class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mt-4 disabled:opacity-50">Précédent</button>
+        <span class="mt-6">Page {{ currentPage }} sur {{ totalPages }}</span>
+        <button @click="nextPage" :disabled="currentPage === totalPages" 
+          class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mt-4 disabled:opacity-50">Suivant</button>
+      </div>
+
+      <!-- Confirmation de suppression -->
+      <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg text-center">
+          <p>Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
+          <div class="mt-4">
+            <button @click="deleteTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
+            <button @click="cancelDelete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation de modification -->
+      <div v-if="showEditConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded shadow-lg text-center">
+          <p>Êtes-vous sûr de vouloir modifier cette tâche ?</p>
+          <div class="mt-4">
+            <button @click="confirmEditTask" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Oui</button>
+            <button @click="() => showEditConfirmation.value = false" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Non</button>
+          </div>
         </div>
       </div>
     </div>
