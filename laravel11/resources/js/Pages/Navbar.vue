@@ -3,7 +3,7 @@ import { Inertia } from '@inertiajs/inertia';
 </script>
 
 <template>
-  <nav class="bg-gray-800 p-4">
+  <nav class="bg-blue-600 p-4">
     <div class="container mx-auto flex justify-between items-center">
       <!-- Logo ou titre à gauche -->
       <h1 class="text-white text-2xl font-semibold">Ma Todo List</h1>
