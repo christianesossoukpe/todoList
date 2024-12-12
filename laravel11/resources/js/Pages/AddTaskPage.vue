@@ -61,7 +61,6 @@ const addTask = () => {
             class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="" disabled selected>Choisir un statut</option>
-            <option value="pending">En attente</option>
             <option value="in_progress">En cours</option>
             <option value="completed">Terminé</option>
           </select>
