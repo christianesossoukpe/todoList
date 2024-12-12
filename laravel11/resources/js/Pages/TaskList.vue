@@ -114,6 +114,9 @@ const previousPage = () => {
           </span>
         </div>
         <div class="mt-2">
+          <strong>Catégorie:</strong> {{ task.category }} <!-- Ajout de la catégorie ici -->
+        </div>
+        <div class="mt-2">
           <strong>Date limite:</strong> {{ task.due_date }}
         </div>
         <div class="mt-4 flex justify-between">
@@ -124,9 +127,13 @@ const previousPage = () => {
     </div>
 
     <div class="mt-6 flex justify-center space-x-4">
-      <button @click="previousPage" :disabled="currentPage === 1" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">Précédent</button>
-      <span>Page {{ currentPage }} sur {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">Suivant</button>
+      <button @click="previousPage" :disabled="currentPage === 1" 
+      class="bg-gray-300 text-gray-700 px-4 py-2 rounded
+       hover:bg-gray-400 mt-4 disabled:opacity-50">Précédent</button>
+      <span class="mt-6">Page {{ currentPage }} sur {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages" 
+      class="bg-gray-300 text-gray-700 px-4
+       py-2 rounded hover:bg-gray-400 mt-4 disabled:opacity-50">Suivant</button>
     </div>
 
     <div v-if="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

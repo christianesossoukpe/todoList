@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Faker\Generator as Faker;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
@@ -24,7 +23,7 @@ class TaskFactory extends Factory
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'status' => $this->faker->randomElement(['in_progress', 'completed']),
-            'category' => $this->faker->word,
+            'category' => $this->faker->randomElement(['work', 'personal', 'urgent', 'low_priority']),  // Spécification des catégories valides
             'due_date' => $this->faker->dateTimeBetween('+1 week', '+1 month'),
         ];
     }

@@ -11,6 +11,11 @@ const dueDate = ref('');  // Ajout d'une variable pour la date d'échéance
 
 // Fonction pour ajouter une tâche
 const addTask = () => {
+  if (!title.value || !description.value || !status.value || !category.value || !dueDate.value) {
+    alert("Tous les champs doivent être remplis !");
+    return;
+  }
+
   Inertia.post('/tasks', {
     title: title.value, 
     description: description.value,
@@ -69,13 +74,17 @@ const addTask = () => {
 
         <div class="mb-4">
           <label for="category" class="block text-gray-700 font-medium mb-2">Catégorie</label>
-          <input
+          <select
             v-model="category"
             id="category"
-            type="text"
             required
             class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="work">Travail</option>
+            <option value="personal">Personnel</option>
+            <option value="urgent">Urgent</option>
+            <option value="low_priority">Priorité faible</option>
+          </select>
         </div>
 
         <div class="mb-4">

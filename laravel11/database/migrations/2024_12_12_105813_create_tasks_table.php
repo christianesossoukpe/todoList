@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('title'); // Titre de la tâche
             $table->text('description'); // Description de la tâche
             $table->enum('status', ['in_progress', 'completed']); // Statut de la tâche
-            $table->string('category'); // Catégorie de la tâche
+            $table->enum('category', ['work', 'personal', 'urgent', 'low_priority']); // Catégories de la tâche
             $table->date('due_date'); // Date limite
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.
