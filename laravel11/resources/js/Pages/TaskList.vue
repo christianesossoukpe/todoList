@@ -15,7 +15,7 @@ const taskToDelete = ref(null); // Pour stocker la tâche à supprimer
 const showEditConfirmation = ref(false); // Pour afficher la confirmation de modification
 const taskToEdit = ref(null); // Pour stocker la tâche à modifier
 const currentPage = ref(1); // Pour gérer la page courante
-const itemsPerPage = 6; // Nombre de tâches par page
+const itemsPerPage = ref(6); // Nombre de tâches par page
 
 // États pour la recherche et le filtrage
 const searchQuery = ref(''); // Pour la recherche par titre ou description
@@ -76,7 +76,7 @@ const confirmEditTask = () => {
   }
 };
 
-// Propriété calculée pour filtrer et paginer les tâches
+// Propriété calculée pour filtrer les tâches
 const filteredTasks = computed(() => {
   let filtered = tasks; // Commencer avec toutes les tâches
 
@@ -86,7 +86,7 @@ const filteredTasks = computed(() => {
     filtered = filtered.filter(task =>
       task.title.toLowerCase().includes(query) ||
       task.description.toLowerCase().includes(query) ||
-      task.category.toLowerCase().includes(query) // Ajout du filtre par catégorie
+      task.category.toLowerCase().includes(query)
     );
   }
 
@@ -100,28 +100,37 @@ const filteredTasks = computed(() => {
     filtered = filtered.filter(task => task.due_date === filterDueDate.value);
   }
 
-  // Paginer les tâches
-  const startIndex = (currentPage.value - 1) * itemsPerPage; // Calcul de l'index de début
-  return filtered.slice(startIndex, startIndex + itemsPerPage); // Retourne les tâches paginées
+  return filtered;
+});
+
+// Propriété calculée pour les tâches paginées
+const paginatedTasks = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  return filteredTasks.value.slice(startIndex, startIndex + itemsPerPage.value);
 });
 
 // Propriété calculée pour le nombre total de pages
-const totalPages = computed(() => Math.ceil(filteredTasks.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(filteredTasks.value.length / itemsPerPage.value));
 
 // Fonction pour passer à la page suivante
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
-    currentPage.value++; // Incrémente la page courante
+    currentPage.value++;
   }
 };
 
 // Fonction pour revenir à la page précédente
 const previousPage = () => {
   if (currentPage.value > 1) {
-    currentPage.value--; // Décrémente la page courante
+    currentPage.value--;
   }
 };
 </script>
+
+ 
+
+  
+
 
 <template>
   <div class="bg-gray-100">
