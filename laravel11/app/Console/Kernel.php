@@ -8,8 +8,10 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule)
     {
+        // Exécuter la commande reminders:send toutes les heures
         $schedule->command('reminders:send')->daily();
     }
+    
 
     protected function commands()
     {

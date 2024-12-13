@@ -2,10 +2,12 @@
 namespace App\Http\Controllers;
 namespace App\Http\Controllers;
 
+use App\Mail\TaskReminder;
 use App\Models\Task;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Importation de la façade Auth
+use Illuminate\Support\Facades\Mail;
 
 class TaskController extends Controller
 {
@@ -112,5 +114,14 @@ class TaskController extends Controller
     
         return redirect()->route('tasks.index')->with('message', 'Tâche mise à jour avec succès!');
     }
-    
+ 
+
+    public function sendReminder(Task $task)
+    {
+        // Envoyer un email de rappel
+        Mail::to($task->user->email)->send(new TaskReminder($task));
+
+        return response()->json(['message' => 'Email de rappel envoyé.']);
+    }
+
 }
