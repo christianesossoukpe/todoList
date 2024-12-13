@@ -69,10 +69,7 @@ import TaskList from './TaskList.vue';
                     </nav>
                 </header>
 
-                <main class="mt-10 text-center"> <!-- Centré le contenu -->
-                    
-                     
-                </main>
+                
             </div>
         </div>
         </div>

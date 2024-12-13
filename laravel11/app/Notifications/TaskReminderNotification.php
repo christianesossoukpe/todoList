@@ -7,39 +7,33 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TaskReminder extends Notification
+class TaskReminderNotification extends Notification
 {
     use Queueable;
-
+    private $task;
     /**
      * Create a new notification instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct($task) { 
+        $this->task = $task;
+     }
 
     /**
      * Get the notification's delivery channels.
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+    public function via($notifiable) {
+         return ['mail'];
+         }
 
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
-    {
+    public function toMail($notifiable) { 
         return (new MailMessage)
-        ->subject('Rappel de tâche')
-        ->line('Il vous reste deux jours avant la fin de votre tâche.')
-        ->action('Voir la tâche', url('/tasks/'.$this->task->id))
-        ->line('Merci de votre attention.');
-    }
+         ->line('This is a reminder for the task: '.$this->task->name) ->action('View Task', url('/tasks/'.$this->task->id)) ->line('Please complete it before the deadline: '.$this->task->due_date);
+     }
 
     /**
      * Get the array representation of the notification.

@@ -5,6 +5,7 @@ use App\Http\Controllers\TaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -38,5 +39,13 @@ Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 Route::get('/tasks/{id}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
 Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
 
+ 
+Route::get('/send-test-email', function () {
+    Mail::raw('This is a test email', function ($message) {
+        $message->to('christdebo68@gmail.com')
+                ->subject('Test Email');
+    });
+    return 'Test email sent!';
+});
 
 require __DIR__.'/auth.php';
