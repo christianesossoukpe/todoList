@@ -30,15 +30,16 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout class="bg-gradient-to-r from-sky-300 to-indigo-500" >
         <Head  />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+        <div v-if="status" class="mb-4 text-sm font-medium text-green-600 bg-gradient-to-r from-sky-300 to-indigo-500">
             {{ status }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
+                <h1 class="text-3xl text-center">Connectez-vous ici!</h1>
                 <InputLabel for="email" value="Email" />
 
                 <TextInput
@@ -69,26 +70,13 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
-                </label>
-            </div>
+          
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
+            <div class="mt-4 flex items-center justify-center">
+               
 
                 <PrimaryButton
-                    class="ms-4"
+                    class="ms-4 bg-violet-400 items-center"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >

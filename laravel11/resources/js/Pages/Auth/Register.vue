@@ -21,11 +21,12 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout  class="bg-gradient-to-r from-sky-300 to-indigo-500">
         <Head title="Register" />
 
         <form @submit.prevent="submit">
             <div>
+                <h1 class="text-3xl text-center">Inscrivez-vous ici!</h1>
                 <InputLabel for="name" value="Name" />
 
                 <TextInput
@@ -92,16 +93,11 @@ const submit = () => {
                 />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Already registered?
-                </Link>
+            <div class="mt-4  flex items-center justify-center  ">
+               
 
                 <PrimaryButton
-                    class="ms-4"
+                    class="ms-4 bg-violet-400 items-center"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >

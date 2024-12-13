@@ -112,4 +112,5 @@ class TaskController extends Controller
     
         return redirect()->route('tasks.index')->with('message', 'Tâche mise à jour avec succès!');
     }
+    
 }

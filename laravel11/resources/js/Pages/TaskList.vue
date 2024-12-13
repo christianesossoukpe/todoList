@@ -4,6 +4,7 @@ import { usePage } from '@inertiajs/vue3'; // Pour accéder aux données de la p
 import { ref, computed } from 'vue'; // Importation des hooks de Vue
 import { Inertia } from '@inertiajs/inertia'; // Pour gérer les requêtes Inertia
 import Navbar from './Navbar.vue'; // Importation du composant Navbar
+import TaskReminder from './TaskReminder.vue';
 
 // Récupération des tâches depuis les props de la page
 const { tasks } = usePage().props;
@@ -40,47 +41,46 @@ const confirmDeleteTask = (task) => {
 const deleteTask = () => {
   if (taskToDelete.value) {
     Inertia.delete(`/tasks/${taskToDelete.value.id}`).then(() => {
-      showNotification('Tâche supprimée avec succès!', 'success'); // Notification de succès
-      showDeleteConfirmation.value = false; // Masquer la confirmation
-      taskToDelete.value = null; // Réinitialiser la tâche à supprimer
+      showNotification('Tâche supprimée avec succès!', 'success');
+      showDeleteConfirmation.value = false;
+      taskToDelete.value = null;
     }).catch(() => {
-      showNotification('Erreur lors de la suppression de la tâche.', 'error'); // Notification d'erreur
-      showDeleteConfirmation.value = false; // Masquer la confirmation
+      showNotification('Erreur lors de la suppression de la tâche.', 'error');
+      showDeleteConfirmation.value = false;
     });
   }
 };
 
 // Fonction pour annuler la suppression
 const cancelDelete = () => {
-  showDeleteConfirmation.value = false; // Masquer la confirmation
-  taskToDelete.value = null; // Réinitialiser la tâche à supprimer
+  showDeleteConfirmation.value = false;
+  taskToDelete.value = null;
 };
 
 // Fonction pour éditer une tâche
 const editTask = (id) => {
-  showEditConfirmation.value = true; // Afficher la confirmation d'édition
-  taskToEdit.value = id; // Stocker l'ID de la tâche à modifier
+  showEditConfirmation.value = true;
+  taskToEdit.value = id;
 };
 
 // Fonction pour confirmer l'édition d'une tâche
 const confirmEditTask = () => {
   if (taskToEdit.value) {
     Inertia.get(`/tasks/${taskToEdit.value}/edit`).then(() => {
-      showNotification('Tâche modifiée avec succès!', 'success'); // Notification de succès
-      showEditConfirmation.value = false; // Masquer la confirmation
-      taskToEdit.value = null; // Réinitialiser la tâche à modifier
+      showNotification('Tâche modifiée avec succès!', 'success');
+      showEditConfirmation.value = false;
+      taskToEdit.value = null;
     }).catch(() => {
-      showNotification('Erreur lors de la modification de la tâche.', 'error'); // Notification d'erreur
-      showEditConfirmation.value = false; // Masquer la confirmation
+      showNotification('Erreur lors de la modification de la tâche.', 'error');
+      showEditConfirmation.value = false;
     });
   }
 };
 
 // Propriété calculée pour filtrer les tâches
 const filteredTasks = computed(() => {
-  let filtered = tasks; // Commencer avec toutes les tâches
+  let filtered = tasks;
 
-  // Filtrer par requête de recherche (titre, description ou catégorie)
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(task =>
@@ -90,12 +90,10 @@ const filteredTasks = computed(() => {
     );
   }
 
-  // Filtrer par statut
   if (selectedStatus.value !== 'all') {
     filtered = filtered.filter(task => task.status === selectedStatus.value);
   }
 
-  // Filtrer par date limite
   if (filterDueDate.value) {
     filtered = filtered.filter(task => task.due_date === filterDueDate.value);
   }
@@ -127,14 +125,10 @@ const previousPage = () => {
 };
 </script>
 
- 
-
-  
-
-
 <template>
   <div class="bg-gray-100">
     <Navbar /> <!-- Affichage de la barre de navigation -->
+    <TaskReminder v-if="task" :task="task" />
     <div class="bg-gradient-to-r from-sky-300 to-indigo-500">
 
       <div v-if="notifications.length > 0" class="fixed top-5 right-5 z-50">
@@ -143,45 +137,39 @@ const previousPage = () => {
           :key="index" 
           :class="['p-4 rounded shadow-md', notification.type === 'error' ? 'bg-red-500 text-white' : notification.type === 'info' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white']"
         >
-          {{ notification.message }} <!-- Affichage du message de notification -->
+          {{ notification.message }}
         </div>
       </div>
 
-      <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1> <!-- Titre de la liste -->
+      <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1>
 
       <!-- Barre de recherche et filtres -->
       <div class="mb-4 flex flex-wrap items-start justify-center gap-4">
-  <!-- Champ de recherche -->
- <!-- Champ de recherche -->
-<input
-  type="text"
-  v-model="searchQuery"
-  class="border rounded p-2 w-full sm:w-[300px]"
-  placeholder="Rechercher par titre, description ou catégorie"
-/>
+        <input
+          type="text"
+          v-model="searchQuery"
+          class="border rounded p-2 w-full sm:w-[300px]"
+          placeholder="Rechercher par titre, description ou catégorie"
+        />
 
+        <select v-model="selectedStatus" class="border rounded p-2 w-full sm:w-[300px]">
+          <option value="all">Tous les statuts</option>
+          <option value="in_progress">En cours</option>
+          <option value="completed">Terminé</option>
+        </select>
 
-  <!-- Sélecteur de statut -->
-  <select v-model="selectedStatus" class="border rounded p-2 w-full sm:w-[300px]">
-    <option value="all">Tous les statuts</option>
-    <option value="in_progress">En cours</option>
-    <option value="completed">Terminé</option>
-  </select>
+        <input
+          type="date"
+          v-model="filterDueDate"
+          class="border rounded p-2 w-full sm:w-[300px]"
+        />
+      </div>
 
-  <!-- Sélecteur de date -->
-  <input
-    type="date"
-    v-model="filterDueDate"
-    class="border rounded p-2 w-full sm:w-[300px]"
-  />
-</div>
-
-
-      <!-- Affichage des tâches filtrées -->
+      <!-- Affichage des tâches paginées -->
       <div class="flex justify-center p-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
           <div 
-            v-for="task in filteredTasks" 
+            v-for="task in paginatedTasks" 
             :key="task.id" 
             class="bg-white p-3 rounded-lg shadow-md w-72"
           >
