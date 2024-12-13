@@ -80,11 +80,13 @@ const confirmEditTask = () => {
 const filteredTasks = computed(() => {
   let filtered = tasks; // Commencer avec toutes les tâches
 
-  // Filtrer par requête de recherche
+  // Filtrer par requête de recherche (titre, description ou catégorie)
   if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(task =>
-      task.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+      task.title.toLowerCase().includes(query) ||
+      task.description.toLowerCase().includes(query) ||
+      task.category.toLowerCase().includes(query) // Ajout du filtre par catégorie
     );
   }
 
@@ -139,26 +141,32 @@ const previousPage = () => {
       <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1> <!-- Titre de la liste -->
 
       <!-- Barre de recherche et filtres -->
-      <div class="mb-4 ml-[100px] flex flex-row items-start space-x-4">
-        <input
-          type="text"
-          v-model="searchQuery"
-          class="border rounded p-2 w-[300px] ml-[400px]"
-          placeholder="Rechercher par titre ou description"
-        />
+      <div class="mb-4 flex flex-wrap items-start justify-center gap-4">
+  <!-- Champ de recherche -->
+ <!-- Champ de recherche -->
+<input
+  type="text"
+  v-model="searchQuery"
+  class="border rounded p-2 w-full sm:w-[300px]"
+  placeholder="Rechercher par titre, description ou catégorie"
+/>
 
-        <select v-model="selectedStatus" class="border rounded p-2 w-[300px]">
-          <option value="all">Tous les statuts</option>
-          <option value="in_progress">En cours</option>
-          <option value="completed">Terminé</option>
-        </select>
 
-        <input
-          type="date"
-          v-model="filterDueDate"
-          class="border rounded p-2 w-[300px]"
-        />
-      </div>
+  <!-- Sélecteur de statut -->
+  <select v-model="selectedStatus" class="border rounded p-2 w-full sm:w-[300px]">
+    <option value="all">Tous les statuts</option>
+    <option value="in_progress">En cours</option>
+    <option value="completed">Terminé</option>
+  </select>
+
+  <!-- Sélecteur de date -->
+  <input
+    type="date"
+    v-model="filterDueDate"
+    class="border rounded p-2 w-full sm:w-[300px]"
+  />
+</div>
+
 
       <!-- Affichage des tâches filtrées -->
       <div class="flex justify-center p-6">

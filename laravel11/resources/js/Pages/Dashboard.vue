@@ -5,7 +5,7 @@ import { Inertia } from '@inertiajs/inertia'; // Utilisation d'Inertia pour gér
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <!-- <Head title="Dashboard" /> -->
 
     <!-- Section principale avec fond de couleur et centrage -->
     <div class="min-h-screen bg-gradient-to-r from-sky-300 to-indigo-500 flex items-center justify-center">

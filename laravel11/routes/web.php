@@ -25,7 +25,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
  
-Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+ 
+// Protéger les routes des tâches avec le middleware 'auth'
+Route::middleware('auth')->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    // Ajoutez d'autres routes de tâches ici si nécessaire
+});
+
 Route::get('/tasks/create', [TaskController::class, 'create']);
 Route::post('/tasks', [TaskController::class, 'store']);
 Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
