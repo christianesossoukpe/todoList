@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('status', ['in_progress', 'completed']); // Statut de la tâche
             $table->enum('category', ['work', 'personal', 'urgent', 'low_priority']); // Catégories de la tâche
             $table->date('due_date'); // Date limite
-            $table->timestamps();
+             $table->timestamps();
         });
     }
     

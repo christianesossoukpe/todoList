@@ -10,5 +10,12 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = ['title', 'description', 
-    'status', 'category', 'due_date'];
+    'status', 'category', 'due_date', 'user_id'];
+
+
+
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 }
