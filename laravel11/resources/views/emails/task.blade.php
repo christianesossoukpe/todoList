@@ -10,5 +10,6 @@
     <p>Statut : {{ $task->status }}</p>
     <p>Catégorie : {{ $task->category }}</p>
     <p>Date d'échéance : {{ $task->due_date }}</p>
+    <p>Veuillez terminé cette tâche avant la date d'échéance!
 </body>
 </html>
