@@ -2,12 +2,15 @@
 namespace App\Http\Controllers;
 namespace App\Http\Controllers;
 
+use App\Console\Commands\SendTaskReminders;
+use App\Mail\TaskCreated;
 use App\Mail\TaskReminder;
 use App\Models\Task;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Importation de la façade Auth
 use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskCreated as TaskCreatedMail;
 
 class TaskController extends Controller
 {
@@ -27,37 +30,45 @@ class TaskController extends Controller
     }
 
     // Enregistrer une nouvelle tâche
-    public function store(Request $request)
-    {
-        // Vérification de l'authentification
-        if (!Auth::check()) {
-            return redirect()->route('login')->withErrors('Vous devez être connecté pour créer une tâche.');
-        }
-    
-        // Validation des données
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'status' => 'required|string|in:in_progress,completed',
-            'category' => 'required|in:work,personal,urgent,low_priority',
-            'due_date' => 'required|date',
-        ]);
-     
-        // Création de la tâche avec l'ID de l'utilisateur authentifié
-        Task::create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'status' => $validated['status'],
-            'category' => $validated['category'],
-            'due_date' => $validated['due_date'],
-            'user_id' => Auth::id(),  // Utilisation de Auth::id() pour récupérer l'ID de l'utilisateur connecté
-        ]);
-    
-        // Retour à la page des tâches après l'ajout avec message de succès
-        return redirect()->route('tasks.index')->with('message', 'Tâche créée avec succès!');
+  
+
+public function store(Request $request)
+{
+    // Vérification de l'authentification
+    if (!Auth::check()) {
+        return redirect()->route('login')->withErrors('Vous devez être connecté pour créer une tâche.');
     }
 
+    // Validation des données
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'status' => 'required|string|in:in_progress,completed',
+        'category' => 'required|in:work,personal,urgent,low_priority',
+        'due_date' => 'required|date',
+    ]);
+
+    // Création de la tâche avec l'ID de l'utilisateur authentifié
+    $task = Task::create([
+        'title' => $validated['title'],
+        'description' => $validated['description'],
+        'status' => $validated['status'],
+        'category' => $validated['category'],
+        'due_date' => $validated['due_date'],
+        'user_id' => Auth::id(),
+    ]);
+
+    // Déclencher l'événement
+    event(new TaskCreated($task));
+
+    // Envoyer l'e-mail
+    Mail::to(Auth::user()->email)->send(new TaskCreatedMail($task));
+
+    // Retour à la page des tâches après l'ajout avec message de succès
+    return redirect()->route('tasks.index')->with('message', 'Tâche créée avec succès!');
+}
     // Supprimer une tâche
+
     public function destroy($id)
     {
         $task = Task::findOrFail($id);
@@ -116,12 +127,17 @@ class TaskController extends Controller
     }
  
 
-    public function sendReminder(Task $task)
+  
+    public function sendReminder($taskId)
     {
-        // Envoyer un email de rappel
-        Mail::to($task->user->email)->send(new TaskReminder($task));
+        // Exemple d'envoi d'un email avec Mailtrap
+        $task = Task::find($taskId);
+        
+        // Envoi du mail
+        Mail::to('recipient@example.com')->send(new TaskReminder($task));
 
-        return response()->json(['message' => 'Email de rappel envoyé.']);
+        return response()->json(['message' => 'Rappel envoyé!']);
     }
+    
 
 }

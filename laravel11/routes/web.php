@@ -6,6 +6,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskReminder;
+use App\Models\Task;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -40,12 +42,22 @@ Route::get('/tasks/{id}/edit', [TaskController::class, 'edit'])->name('tasks.edi
 Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
 
  
-Route::get('/send-test-email', function () {
-    Mail::raw('This is a test email', function ($message) {
-        $message->to('christdebo68@gmail.com')
-                ->subject('Test Email');
-    });
-    return 'Test email sent!';
-});
+// Route::get('/send-test-email', function () {
+//     Mail::raw('This is a test email', function ($message) {
+//         $message->to('christdebo68@gmail.com')
+//                 ->subject('Test Email');
+//     });
+//     return 'Test email sent!';
+// });
 
+
+Route::get('send/{taskId}', function ($taskId) {
+    $task = Task::findOrFail($taskId);
+    
+    // Envoi de l'email via Mailtrap
+    Mail::to('christianesossoukpe@gmail.com')->send(new TaskReminder($task));
+
+
+    return 'Email de rappel envoyé!';
+});
 require __DIR__.'/auth.php';

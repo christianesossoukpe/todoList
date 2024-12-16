@@ -92,6 +92,7 @@ const confirmEditTask = () => {
 const filteredTasks = computed(() => {
   let filtered = tasks;
 
+  // Filtrage par recherche
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(task =>
@@ -101,16 +102,22 @@ const filteredTasks = computed(() => {
     );
   }
 
+  // Filtrage par statut
   if (selectedStatus.value !== 'all') {
     filtered = filtered.filter(task => task.status === selectedStatus.value);
   }
 
+  // Filtrage par date limite
   if (filterDueDate.value) {
     filtered = filtered.filter(task => task.due_date === filterDueDate.value);
   }
 
+  // Tri des tâches de la plus récente à la plus ancienne
+  filtered = filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
   return filtered;
 });
+
 
 // Propriété calculée pour les tâches paginées
 const paginatedTasks = computed(() => {
@@ -139,6 +146,7 @@ const previousPage = () => {
 <template>
   <div class="bg-gray-100">
     <Navbar />  
+    
     <TaskReminder v-if="task" :task="task" />
     <div class="bg-gradient-to-r from-sky-300 to-indigo-500">
 
@@ -155,7 +163,8 @@ const previousPage = () => {
       <h1 class="text-2xl font-bold mb-4 text-center">Liste des Tâches</h1>
 
       <!-- Barre de recherche et filtres -->
-      <div class="mb-4 flex flex-wrap items-start justify-center gap-4">
+      <div class="mb-4 flex flex-wrap
+       items-start justify-center gap-4">
         <input
           type="text"
           v-model="searchQuery"
@@ -184,7 +193,7 @@ const previousPage = () => {
             :key="task.id" 
             class="bg-white p-3 rounded-lg shadow-md w-72"
           >
-            <div class="text-gray-600">Tâche: {{ task.id }}</div>
+            <!-- <div class="text-gray-600">Tâche: {{ task.id }}</div> -->
             <div class="font-bold text-lg">Titre: {{ task.title }}</div>
             <div class="text-gray-700 mt-1 text-sm">Description: {{ task.description }}</div>
             <div class="mt-2">
@@ -243,3 +252,4 @@ const previousPage = () => {
 
 <style scoped>
 </style>
+ 
